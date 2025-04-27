@@ -1,40 +1,62 @@
 // client/src/pages/Home.tsx
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addTask, deleteTask, getTasks, updateTaskStatus } from "../services/taskService";
-import { useTaskStore } from "../store/taskStore";
 import "../styles/Home.css";
 
+interface Task {
+  id: string;
+  title: string;
+  status: "pending" | "done";
+}
+
 export default function Home() {
-  const { tasks, setTasks } = useTaskStore();
   const [title, setTitle] = useState("");
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
+  const queryClient = useQueryClient();
 
-  const loadTasks = async () => {
-    const loadedTasks = await getTasks();
-    setTasks(loadedTasks);
-  };
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: getTasks,
+  });
+
+  const addTaskMutation = useMutation({
+    mutationFn: addTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: deleteTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
+  const updateTaskStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "pending" | "done" }) =>
+      updateTaskStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-
-    const newTask = await addTask({ title, status: "pending" });
-    setTasks([...tasks, newTask]);
+    await addTaskMutation.mutateAsync({ title, status: "pending" });
     setTitle("");
   };
 
-  const handleMarkAsDone = async (id: string) => {
-    await updateTaskStatus(id, "done");
-    loadTasks();
+  const handleDelete = async (id: string) => {
+    await deleteTaskMutation.mutateAsync(id);
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteTask(id);
-    loadTasks();
+  const handleStatusChange = async (id: string, currentStatus: "pending" | "done") => {
+    const newStatus = currentStatus === "pending" ? "done" : "pending";
+    await updateTaskStatusMutation.mutateAsync({ id, status: newStatus });
   };
 
   return (
@@ -51,20 +73,30 @@ export default function Home() {
           <button type="submit">Add Task</button>
         </form>
 
-        {tasks.length === 0 ? (
+        {isLoading ? (
+          <p>Loading tasks...</p>
+        ) : tasks.length === 0 ? (
           <p className="no-tasks">No tasks available</p>
         ) : (
           <ul className="task-list">
             {tasks.map((task) => (
               <li key={task.id} className="task-item">
-                <span className="task-text">{task.title} - {task.status}</span>
+                <span className="task-text">
+                  {task.title} - {task.status}
+                </span>
                 <div className="task-buttons">
                   {task.status === "pending" && (
-                    <button className="done" onClick={() => handleMarkAsDone(task.id)}>
+                    <button
+                      className="done"
+                      onClick={() => handleStatusChange(task.id, task.status)}
+                    >
                       Mark as Done
                     </button>
                   )}
-                  <button className="delete" onClick={() => handleDelete(task.id)}>
+                  <button
+                    className="delete"
+                    onClick={() => handleDelete(task.id)}
+                  >
                     Delete
                   </button>
                 </div>
