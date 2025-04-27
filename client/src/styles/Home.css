@@ -1,51 +1,132 @@
 /* client/src/styles/Home.css */
 
-.home-container {
+/* Page container */
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 50px 20px;
+  justify-content: center;
   min-height: 100vh;
-  background-color: #f9f9f9;
+  background-color: #f8f9fa;
+  padding: 20px;
 }
 
-.home-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 30px;
-  color: #333;
+/* Card styling */
+.card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
 }
 
-.task-form {
+/* Title */
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #343a40;
+}
+
+/* Input and Button group */
+.input-group {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.task-input {
-  padding: 10px;
-  width: 300px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.input-group input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
-.add-task-button {
+.input-group button {
   padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #4f46e5;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.add-task-button:hover {
-  background-color: #4338ca;
+.input-group button:hover {
+  background-color: #0056b3;
 }
 
-.no-tasks-message {
+/* Task List */
+.task-list {
+  list-style: none;
+  padding: 0;
   margin-top: 20px;
-  color: #666;
-  font-size: 1.2rem;
+}
+
+/* Individual Task */
+.task-item {
+  background-color: #f1f3f5;
+  margin-bottom: 12px;
+  padding: 14px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Task Text */
+.task-text {
+  font-size: 18px;
+  color: #212529;
+  font-weight: 500;
+}
+
+/* Task Buttons */
+.task-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Mark as Done button */
+.task-buttons .done {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.task-buttons .done:hover {
+  background-color: #1e7e34;
+}
+
+/* Delete button */
+.task-buttons .delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.task-buttons .delete:hover {
+  background-color: #b02a37;
+}
+
+/* No tasks message */
+.no-tasks {
+  text-align: center;
+  color: #6c757d;
+  margin-top: 20px;
+  font-size: 18px;
 }
