@@ -1,11 +1,12 @@
 import React from 'react';
+import Home from './pages/Home';
 
-const App = () => {
+function App() {
   return (
     <div>
-      <h1>Task Manager</h1>
+      <Home />
     </div>
   );
-};
+}
 
 export default App;
