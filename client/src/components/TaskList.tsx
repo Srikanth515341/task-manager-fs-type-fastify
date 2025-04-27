@@ -1,66 +1,46 @@
 // client/src/components/TaskList.tsx
 
-import { useTaskStore } from '../store/taskStore';
-import { useEffect } from 'react';
-import { fetchTasks, deleteTask, updateTaskStatus } from '../services/taskService';
+import { useTaskStore } from "../store/taskStore";
+import { deleteTask as deleteTaskApi, updateTaskStatus } from "../services/taskService";
 
 const TaskList = () => {
   const { tasks, setTasks } = useTaskStore();
 
-  useEffect(() => {
-    const loadTasks = async () => {
-      try {
-        const fetchedTasks = await fetchTasks();
-        setTasks(fetchedTasks);
-      } catch (error) {
-        console.error('Failed to fetch tasks', error);
-      }
-    };
-
-    loadTasks();
-  }, [setTasks]);
-
   const handleDelete = async (id: string) => {
-    try {
-      await deleteTask(id);
-      setTasks(tasks.filter((task) => task.id !== id));
-    } catch (error) {
-      console.error('Failed to delete task', error);
-    }
+    await deleteTaskApi(id);
+    setTasks(tasks.filter(task => task.id !== id));
   };
 
-  const handleStatusToggle = async (id: string, currentStatus: 'pending' | 'done') => {
-    const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
-    try {
-      await updateTaskStatus(id, newStatus);
-      setTasks(
-        tasks.map((task) =>
-          task.id === id ? { ...task, status: newStatus } : task
-        )
-      );
-    } catch (error) {
-      console.error('Failed to update task status', error);
-    }
+  const handleStatusChange = async (id: string) => {
+    const task = tasks.find(task => task.id === id);
+    if (!task) return;
+    const newStatus = task.status === "pending" ? "done" : "pending";
+    await updateTaskStatus(id, newStatus);
+    setTasks(
+      tasks.map(task =>
+        task.id === id ? { ...task, status: newStatus } : task
+      )
+    );
   };
+
+  if (tasks.length === 0) {
+    return <p>No tasks available</p>;
+  }
 
   return (
-    <div className="task-list">
-      {tasks.length === 0 ? (
-        <p>No tasks available</p>
-      ) : (
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              <span>{task.title}</span>
-              <button onClick={() => handleStatusToggle(task.id, task.status)}>
-                {task.status === 'pending' ? 'Mark as Done' : 'Mark as Pending'}
-              </button>
-              <button onClick={() => handleDelete(task.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <ul>
+      {tasks.map(task => (
+        <li key={task.id} style={{ marginBottom: "10px" }}>
+          {task.title} - {task.status}
+          <button onClick={() => handleStatusChange(task.id)} style={{ marginLeft: "10px" }}>
+            Mark as {task.status === "pending" ? "Done" : "Pending"}
+          </button>
+          <button onClick={() => handleDelete(task.id)} style={{ marginLeft: "10px" }}>
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 };
 

@@ -1,24 +1,29 @@
 // client/src/services/taskService.ts
 
-import axios from 'axios';
-import { Task } from '../types/Task';
+import axios from "axios";
 
-const API_URL = 'http://localhost:5000';
+const API_URL = "http://localhost:5000/tasks";
 
-export const fetchTasks = async (): Promise<Task[]> => {
-  const response = await axios.get(`${API_URL}/tasks`);
+// Fetch all tasks
+export const fetchTasks = async () => {
+  const response = await axios.get(API_URL);
   return response.data;
 };
 
-export const addTask = async (task: Omit<Task, 'id' | 'status'>): Promise<Task> => {
-  const response = await axios.post(`${API_URL}/tasks`, task);
+// Add a new task
+export const addTask = async (task: { title: string }) => {
+  const response = await axios.post(API_URL, task);
   return response.data;
 };
 
-export const deleteTask = async (id: string): Promise<void> => {
-  await axios.delete(`${API_URL}/tasks/${id}`);
+// Update task status
+export const updateTaskStatus = async (id: string, status: "pending" | "done") => {
+  const response = await axios.put(`${API_URL}/${id}`, { status });
+  return response.data;
 };
 
-export const updateTaskStatus = async (id: string, status: 'pending' | 'done'): Promise<void> => {
-  await axios.patch(`${API_URL}/tasks/${id}`, { status });
+// Delete a task
+export const deleteTask = async (id: string) => {
+  const response = await axios.delete(`${API_URL}/${id}`);
+  return response.data;
 };

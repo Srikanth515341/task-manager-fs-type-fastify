@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { getAllTasks, createTask, deleteTask, updateTaskStatus } from "../controllers/taskController";
+import { getTasks, createTask, updateTaskStatus, deleteTask } from "../controllers/taskController";
 
 export async function taskRoutes(fastify: FastifyInstance) {
-  fastify.get("/tasks", getAllTasks);
+  fastify.get("/tasks", getTasks);
   fastify.post("/tasks", createTask);
+  fastify.put("/tasks/:id", updateTaskStatus);
   fastify.delete("/tasks/:id", deleteTask);
-  fastify.patch("/tasks/:id", updateTaskStatus);
 }
