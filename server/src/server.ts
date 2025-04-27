@@ -1,9 +1,12 @@
 import Fastify from "fastify";
+import { taskRoutes } from "./routes/taskRoutes";
 
-// Create Fastify instance
 const fastify = Fastify({
   logger: true,
 });
+
+// Register routes
+fastify.register(taskRoutes);
 
 // Root route
 fastify.get("/", async (request, reply) => {
