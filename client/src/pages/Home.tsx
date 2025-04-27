@@ -1,45 +1,43 @@
-import React, { useState } from 'react';
+// client/src/pages/Home.tsx
+
+import { useState } from 'react';
+import { addTask } from '../services/taskService';
+import { useTaskStore } from '../store/taskStore';
+import TaskList from '../components/TaskList';
 import '../styles/Home.css';
 
-
 const Home = () => {
-  const [task, setTask] = useState('');
-  const [tasks, setTasks] = useState<string[]>([]);
+  const [title, setTitle] = useState('');
+  const { setTasks, tasks } = useTaskStore();
 
-  const handleAddTask = () => {
-    if (task.trim() !== '') {
-      setTasks([...tasks, task]);
-      setTask('');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+
+    try {
+      const newTask = await addTask({ title });
+      setTasks([...tasks, newTask]);
+      setTitle('');
+    } catch (error) {
+      console.error('Failed to add task', error);
     }
-  };
-
-  const handleDeleteTask = (index: number) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
   };
 
   return (
     <div className="home-container">
-      <h1 className="home-title">Task Manager</h1>
-
-      <div className="task-input">
+      <h1>Task Manager</h1>
+      <form onSubmit={handleSubmit} className="task-form">
         <input
           type="text"
           placeholder="Enter your task..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
-        <button onClick={handleAddTask}>Add Task</button>
-      </div>
+        <button type="submit">Add Task</button>
+      </form>
 
-      <ul className="task-list">
-        {tasks.map((t, index) => (
-          <li key={index} className="task-item">
-            <span>{t}</span>
-            <button onClick={() => handleDeleteTask(index)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {/* Task List */}
+      <TaskList />
     </div>
   );
 };
